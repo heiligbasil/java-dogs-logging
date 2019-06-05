@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.ModelAndView
+import java.time.LocalDateTime
 import javax.servlet.http.HttpServletRequest
 
 @RestController
@@ -34,7 +35,7 @@ class DogController
     @GetMapping(value = ["/dogs"], produces = ["application/json"])
     fun getAllDogs(request: HttpServletRequest): ResponseEntity<*>
     {
-        val messageLog: String = "${request.requestURI} accessed"
+        val messageLog: String = "${request.requestURI} accessed on ${LocalDateTime.now()}"
         logger.info(messageLog)
         val message = MessageDetail(messageLog, 7, false)
         rt!!.convertAndSend(DogsInitialApplication.QUEUE_NAME_HIGH, message)
@@ -54,7 +55,7 @@ class DogController
     @GetMapping(value = ["/{id}"], produces = ["application/json"])
     fun getDogDetail(request: HttpServletRequest, @PathVariable id: Long): ResponseEntity<*>
     {
-        val messageLog: String = "${request.requestURI} accessed with id $id"
+        val messageLog: String = "${request.requestURI} accessed with id $id on ${LocalDateTime.now()}"
         logger.info(messageLog)
         val message = MessageDetail(messageLog, 1, true)
         rt!!.convertAndSend(DogsInitialApplication.QUEUE_NAME_LOW, message)
@@ -74,7 +75,7 @@ class DogController
     @GetMapping(value = ["/breeds/{breed}"], produces = ["application/json"])
     fun getDogBreeds(request: HttpServletRequest, @PathVariable breed: String): ResponseEntity<*>
     {
-        val messageLog: String = "${request.requestURI} accessed with breed $breed"
+        val messageLog: String = "${request.requestURI} accessed with breed $breed on ${LocalDateTime.now()}"
         logger.info(messageLog)
         val message = MessageDetail(messageLog, 1, true)
         rt!!.convertAndSend(DogsInitialApplication.QUEUE_NAME_LOW, message)
@@ -94,7 +95,7 @@ class DogController
     @GetMapping(value = ["/dogtable"], produces = ["application/json"])
     fun displayDogTable(request: HttpServletRequest): ModelAndView
     {
-        val messageLog: String = "${request.requestURI} accessed"
+        val messageLog: String = "${request.requestURI} accessed on ${LocalDateTime.now()}"
         logger.info(messageLog)
         val message = MessageDetail(messageLog, 1, true)
         rt!!.convertAndSend(DogsInitialApplication.QUEUE_NAME_LOW, message)
@@ -114,7 +115,7 @@ class DogController
     @GetMapping(value = ["/suitabledogtable"], produces = ["application/json"])
     fun displaySuitableDogTable(request: HttpServletRequest): ModelAndView
     {
-        val messageLog: String = "${request.requestURI} accessed"
+        val messageLog: String = "${request.requestURI} accessed on ${LocalDateTime.now()}"
         logger.info(messageLog)
         val message = MessageDetail(messageLog, 1, true)
         rt!!.convertAndSend(DogsInitialApplication.QUEUE_NAME_LOW, message)
