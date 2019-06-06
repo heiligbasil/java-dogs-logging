@@ -21,6 +21,7 @@ open class DogsInitialApplication
         val EXCHANGE_NAME = "LambdaServer"
         val QUEUE_NAME_LOW = "LowPriorityQueue"
         val QUEUE_NAME_HIGH = "HighPriorityQueue"
+        val QUEUE_NAME_ERROR = "ErrorQueue"
 
         private lateinit var ourDogList: DogList
 
@@ -36,7 +37,6 @@ open class DogsInitialApplication
 
         fun getOurDogList(): DogList = ourDogList
     }
-
 
     @Bean
     open fun appExchange(): TopicExchange
@@ -67,6 +67,19 @@ open class DogsInitialApplication
     {
         return BindingBuilder.bind(appQueueLow()).to(appExchange()).with(QUEUE_NAME_LOW)
     }
+
+    @Bean
+    open fun appQueueError(): Queue
+    {
+        return Queue(QUEUE_NAME_ERROR)
+    }
+
+    @Bean
+    open fun declareBindingError(): Binding
+    {
+        return BindingBuilder.bind(appQueueError()).to(appExchange()).with(QUEUE_NAME_ERROR)
+    }
+
 
     @Bean
     open fun producerJackson2MessageConverter(): Jackson2JsonMessageConverter

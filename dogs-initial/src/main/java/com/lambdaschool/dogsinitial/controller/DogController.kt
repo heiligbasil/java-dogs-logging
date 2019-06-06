@@ -2,7 +2,6 @@ package com.lambdaschool.dogsinitial.controller
 
 import com.lambdaschool.dogsinitial.CheckDog
 import com.lambdaschool.dogsinitial.DogsInitialApplication
-import com.lambdaschool.dogsinitial.exception.InvalidDataTypeException
 import com.lambdaschool.dogsinitial.exception.ResourceNotFoundException
 import com.lambdaschool.dogsinitial.model.Dog
 import com.lambdaschool.dogsinitial.model.MessageDetail

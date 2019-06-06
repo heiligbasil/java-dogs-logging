@@ -1,7 +1,11 @@
 package com.lambdaschool.dogsinitial.handler
 
+import com.lambdaschool.dogsinitial.DogsInitialApplication
+import com.lambdaschool.dogsinitial.controller.DogController
 import com.lambdaschool.dogsinitial.exception.ResourceNotFoundException
 import com.lambdaschool.dogsinitial.model.ErrorDetail
+import com.lambdaschool.dogsinitial.model.MessageDetail
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.TypeMismatchException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.MessageSource
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.NoHandlerFoundException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import java.time.LocalDateTime
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 
@@ -22,9 +27,16 @@ class RestExceptionHandler : ResponseEntityExceptionHandler()
     @Autowired
     private val messageSource: MessageSource? = null
 
+    @Autowired
+    internal var rt: RabbitTemplate? = null
+
     @ExceptionHandler(ResourceNotFoundException::class)
     fun handleResourceNotFoundException(rnfe: ResourceNotFoundException, request: HttpServletRequest): ResponseEntity<*>
     {
+        val messageLog: String = "$request on ${LocalDateTime.now()}"
+        val message = MessageDetail(messageLog, 2, false)
+        rt!!.convertAndSend(DogsInitialApplication.QUEUE_NAME_ERROR, message)
+
         val errorDetail = ErrorDetail()
         errorDetail.setTimestamp(Date().time)
         errorDetail.status = HttpStatus.NOT_FOUND.value()
@@ -77,6 +89,10 @@ class RestExceptionHandler : ResponseEntityExceptionHandler()
 
     override fun handleTypeMismatch(ex: TypeMismatchException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any>
     {
+        val messageLog: String = "$status on ${LocalDateTime.now()}"
+        val message = MessageDetail(messageLog, 2, false)
+        rt!!.convertAndSend(DogsInitialApplication.QUEUE_NAME_ERROR, message)
+
         val errorDetail = ErrorDetail()
         errorDetail.setTimestamp(Date().time)
         errorDetail.status = HttpStatus.BAD_REQUEST.value()
@@ -89,6 +105,10 @@ class RestExceptionHandler : ResponseEntityExceptionHandler()
 
     override fun handleNoHandlerFoundException(ex: NoHandlerFoundException, headers: HttpHeaders, status: HttpStatus, request: WebRequest): ResponseEntity<Any>
     {
+        val messageLog: String = "$status on ${LocalDateTime.now()}"
+        val message = MessageDetail(messageLog, 2, false)
+        rt!!.convertAndSend(DogsInitialApplication.QUEUE_NAME_ERROR, message)
+
         val errorDetail = ErrorDetail()
         errorDetail.setTimestamp(Date().time)
         errorDetail.status = HttpStatus.NOT_FOUND.value()
